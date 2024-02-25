@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HashConverterNS;
+using NBitcoin;
 namespace BlockParser.Classes {
     public static class MyExtension {
        
@@ -96,9 +97,13 @@ namespace BlockParser.Classes {
                 var _versionNumber = r.ReadUInt32();
                 var _previousBlockHash = r.ReadBytes(32);
                 var st0 = BitConverter.ToString(_previousBlockHash).Replace("-", null);
+                byte[] bytes = Encoding.Unicode.GetBytes(st0);
                 var prevH = HashConverter.Convert(st0); //!!
                 var _merkleRoot = r.ReadBytes(32);
                 var merkleString = BitConverter.ToString(_merkleRoot);
+
+              
+
                 var _timeStamp = _epochBaseDate.AddSeconds(r.ReadUInt32());
                 var _bits = r.ReadUInt32();
                 var _nonce = r.ReadUInt32();
@@ -109,18 +114,48 @@ namespace BlockParser.Classes {
                 for (int i=0;i< _transactionCount; i++) {
                     var tVers= r.ReadUInt32();
 
-                     var testTx = r.ReadBytes(200);
-                    var inputCount = r.ReadVarInt();
-                    for(int j = 0; j < inputCount; j++) {
+                    //var testTx = r.ReadBytes(50000);
+                    //var testST = BitConverter.ToString(testTx).Replace("-", null);
+
+                    var inputcnt = r.ReadVarInt();
+                    if (inputcnt == 0) {
+                        r.Read();
+                        inputcnt = r.ReadVarInt();
+                    }
+                    for(int j = 0; j < inputcnt; j++) {
+                        var txfromhash=r.ReadBytes(32);
+
+                        var nOutput = r.ReadBytes(4);
+
+                        var scriptLength = r.ReadVarInt();
+                        var script = r.ReadBytes((int)scriptLength);
+                        var seqNumber = r.ReadBytes(4);
 
                     }
                     var outputCount = r.ReadVarInt();
                     for (int j = 0; j < outputCount; j++) {
+
+                     //    var testTx = r.ReadBytes(50000);
+                     //   var testST= BitConverter.ToString(testTx).Replace("-", null);
+
                         var outVala = r.ReadBytes(8);
                         var outValaa = ReverseBytes(outVala);
-                        var outVal= BitConverter.ToInt32(outValaa);
-                        var outSizeA = r.ReadBytes(4);
-                        var outSize = BitConverter.ToInt16(outSizeA);
+                        var outputValue= BitConverter.ToInt32(outVala);
+                       
+
+                        var scriptLength = r.ReadVarInt();
+                        var script=r.ReadBytes((int)scriptLength);
+
+                        var scriptTx = BitConverter.ToString(script).Replace("-", null);
+
+                        
+                        var publHash = script.SubArray(3, 20);
+                        var publicKeyHash = new KeyId(publHash);
+                        var mainNetAddress = publicKeyHash.GetAddress(Network.Main);
+
+
+
+                        //var outSize = BitConverter.ToInt16(outSizeA);
                     }
                 }
             }
