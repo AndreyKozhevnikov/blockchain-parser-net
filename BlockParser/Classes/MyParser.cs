@@ -66,15 +66,20 @@ namespace BlockParser.Classes {
                 var r = new BinaryReader(stream);
                 var magic = r.ReadBytes(4);
                 var magicST = BitConverter.ToString(magic);
-               // var sz = r.ReadVarInt();
+                // var sz = r.ReadVarInt();
 
 
-               // var test = r.ReadBytes(1000000);
-               // var testSt=BitConverter.ToString(test).Replace("-",null);
+                // var test = r.ReadBytes(1000000);
+                // var testSt=BitConverter.ToString(test).Replace("-",null);
 
-               // var newMagicC = testSt.IndexOf("F9BEB4D9");
-
+                // var newMagicC = testSt.IndexOf("F9BEB4D9");
+              //  var sizeA2 = r.ReadVarInt();
                 var sizeA = r.ReadBytes(4);
+
+                var sizeArev=ReverseBytes(sizeA);
+
+
+                var size=BitConverter.ToInt32(sizeA); //!!
                 //var sizeAA = ReverseBytes(sizeA);
                 //var size=BitConverter.ToInt32(sizeAA);
 
@@ -99,10 +104,12 @@ namespace BlockParser.Classes {
                 var _nonce = r.ReadUInt32();
                 var _transactionCount = r.ReadVarInt();
 
-                var testTx = r.ReadBytes(200);
+               // var testTx = r.ReadBytes(200);
 
                 for (int i=0;i< _transactionCount; i++) {
                     var tVers= r.ReadUInt32();
+
+                     var testTx = r.ReadBytes(200);
                     var inputCount = r.ReadVarInt();
                     for(int j = 0; j < inputCount; j++) {
 
