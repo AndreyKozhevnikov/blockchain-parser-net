@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BlockParser.Entities;
 using HashConverterNS;
+using Microsoft.VisualBasic;
 using NBitcoin;
+using NBitcoin.Crypto;
+using static NBitcoin.RPC.SignRawTransactionRequest;
 namespace BlockParser.Classes {
     public static class MyExtension {
-       
+
     }
 
     public class Parser {
@@ -53,112 +58,145 @@ namespace BlockParser.Classes {
             // var txCount = BitConverter.ToInt32(txCountArr2);
         }
 
+
         public void Parse() {
             var fl = "blk01307.dat";
             var memFile = MemoryMappedFile.CreateFromFile(fl, FileMode.Open, Path.GetFileName(fl), 0, MemoryMappedFileAccess.Read);
             var viewStream = memFile.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
             var reader = new BinaryReader(viewStream);
-         //   while (ReadMagic(reader)) {
-            while (true) {
+            var lst = ParseCore(reader);
+        }
+
+        public List<TBlock> ParseCore(BinaryReader reader) {
+
+
+            //test
+            //var testArr = reader.ReadBytes(591562);
+            //var testArrSt = BitConverter.ToString(testArr).Replace("-", null);
+            //using (FileStream fileStream = new FileStream("oneBlockData.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+            //    fileStream.Write(testArr, 0, testArr.Length);
+            //}
+            //
+
+
+            var blocks = new List<TBlock>();
+            while (ReadMagic(reader)) {
+                //while (true) {
+                var block = new TBlock();
                 var stream = reader.BaseStream;
                 var _position = stream.Position;
-              //  stream.Position = _position + 4;
-              
+
+
                 var r = new BinaryReader(stream);
-                var magic = r.ReadBytes(4);
-                var magicST = BitConverter.ToString(magic);
-                // var sz = r.ReadVarInt();
+                //  var magic = r.ReadBytes(4); 
+                //  var magicST = BitConverter.ToString(magic); F9BEB4D9
 
-
-                // var test = r.ReadBytes(1000000);
-                // var testSt=BitConverter.ToString(test).Replace("-",null);
-
-                // var newMagicC = testSt.IndexOf("F9BEB4D9");
-              //  var sizeA2 = r.ReadVarInt();
                 var sizeA = r.ReadBytes(4);
 
-                var sizeArev=ReverseBytes(sizeA);
+                var sizeArev = ReverseBytes(sizeA);
 
 
-                var size=BitConverter.ToInt32(sizeA); //!!
-                //var sizeAA = ReverseBytes(sizeA);
-                //var size=BitConverter.ToInt32(sizeAA);
-
-
-                //test11
-
-             //   var allBlock = r.ReadBytes((int)sz);
-
-                //var newBlockMagic = r.ReadBytes(40);
-
-
-
-                //test
-                var _versionNumber = r.ReadUInt32();
+                block.Size = BitConverter.ToInt32(sizeA);
+                var versionNumberVal = r.ReadBytes(4);
+                var versionNumberValST = BitConverter.ToString(versionNumberVal).Replace("-", null);
+                block.VersionNumber = "0x" + HashConverter.Convert(versionNumberValST);
                 var _previousBlockHash = r.ReadBytes(32);
                 var st0 = BitConverter.ToString(_previousBlockHash).Replace("-", null);
                 byte[] bytes = Encoding.Unicode.GetBytes(st0);
+                byte[] bytes2 = HashConverter.StringToByteArray(st0);
+
                 var prevH = HashConverter.Convert(st0); //!!
+                block.PrevBlockHash = prevH;
                 var _merkleRoot = r.ReadBytes(32);
-                var merkleString = BitConverter.ToString(_merkleRoot);
+                var tmpMerkle = BitConverter.ToString(_merkleRoot).Replace("-", null);
+                block.MerkleRoot = HashConverter.Convert(tmpMerkle);
+                block.TimeStamp = _epochBaseDate.AddSeconds(r.ReadUInt32());
+                var bitsBytes = r.ReadBytes(4);
 
-              
-
-                var _timeStamp = _epochBaseDate.AddSeconds(r.ReadUInt32());
-                var _bits = r.ReadUInt32();
-                var _nonce = r.ReadUInt32();
+                var bitST = BitConverter.ToString(bitsBytes).Replace("-", null);  //https://learnmeabitcoin.com/technical/bits
+                block.Bits = "0x" + HashConverter.Convert(bitST);
+                // block.Bits = r.re();
+                block.Nonce = r.ReadUInt32();
                 var _transactionCount = r.ReadVarInt();
-
-               // var testTx = r.ReadBytes(200);
-
-                for (int i=0;i< _transactionCount; i++) {
-                    var tVers= r.ReadUInt32();
+                block.TransactionCount = _transactionCount;
+                block.Transactions = new List<TTransaction>();
+                for (int i = 0; i < _transactionCount; i++) {
+                    var transaction = new TTransaction();
+                    transaction.Version = r.ReadUInt32();
 
                     //var testTx = r.ReadBytes(50000);
                     //var testST = BitConverter.ToString(testTx).Replace("-", null);
 
-                    var inputcnt = r.ReadVarInt();
-                    if (inputcnt == 0) {
+                    transaction.InputCount = r.ReadVarInt();
+
+                    // bool IsWitness = false;
+                    if (transaction.InputCount == 0) {
                         r.Read();
-                        inputcnt = r.ReadVarInt();
+                        transaction.InputCount = r.ReadVarInt();
+                        transaction.HasWitness = true;
                     }
-                    for(int j = 0; j < inputcnt; j++) {
-                        var txfromhash=r.ReadBytes(32);
+                    transaction.Inputs = new List<Input>();
+                    for (int j = 0; j < transaction.InputCount; j++) {
+                        var input = new Input();
+                        var txfromhash = r.ReadBytes(32);
+                        input.TxId = BitConverter.ToString(txfromhash).Replace("-", null);
 
                         var nOutput = r.ReadBytes(4);
-
-                        var scriptLength = r.ReadVarInt();
-                        var script = r.ReadBytes((int)scriptLength);
+                        var nOutputTx = BitConverter.ToString(nOutput).Replace("-", null);
+                        input.OutputNumber = nOutputTx;
+                        input.ScriptLength = r.ReadVarInt();
+                        var script = r.ReadBytes((int)input.ScriptLength);
+                        input.Script = BitConverter.ToString(script).Replace("-", null);
                         var seqNumber = r.ReadBytes(4);
-
+                        input.Sequence = BitConverter.ToString(seqNumber).Replace("-", null);
+                        transaction.Inputs.Add(input);
                     }
-                    var outputCount = r.ReadVarInt();
-                    for (int j = 0; j < outputCount; j++) {
-
-                     //    var testTx = r.ReadBytes(50000);
-                     //   var testST= BitConverter.ToString(testTx).Replace("-", null);
+                    transaction.OutputCount = r.ReadVarInt();
+                    transaction.Outputs = new List<Output>();
+                    for (int j = 0; j < transaction.OutputCount; j++) {
+                        var output = new Output();
+                        //var testTx = r.ReadBytes(50000);
+                        //var testST = BitConverter.ToString(testTx).Replace("-", null);
 
                         var outVala = r.ReadBytes(8);
                         var outValaa = ReverseBytes(outVala);
-                        var outputValue= BitConverter.ToInt32(outVala);
-                       
-
-                        var scriptLength = r.ReadVarInt();
-                        var script=r.ReadBytes((int)scriptLength);
-
-                        var scriptTx = BitConverter.ToString(script).Replace("-", null);
-
-                        
-                        var publHash = script.SubArray(3, 20);
-                        var publicKeyHash = new KeyId(publHash);
-                        var mainNetAddress = publicKeyHash.GetAddress(Network.Main);
+                        output.Value = BitConverter.ToInt32(outVala);
 
 
+                        output.ScriptSize = r.ReadVarInt();
+                        var script = r.ReadBytes((int)output.ScriptSize);
+                        output.Script = BitConverter.ToString(script).Replace("-", null);
 
-                        //var outSize = BitConverter.ToInt16(outSizeA);
+                        //get key - to do
+                        //var publHash = script.SubArray(3, 20);
+                        //var publicKeyHash = new KeyId(publHash);
+                        //var mainNetAddress = publicKeyHash.GetAddress(Network.Main);
+                        //
+                        transaction.Outputs.Add(output);
+
                     }
+                    transaction.Witnesses = new List<Witness>();
+                    if (transaction.HasWitness) {
+                        for (int j = 0; j < transaction.InputCount; j++) {
+                            var witnessCnt = r.ReadVarInt();
+                            for (int k = 0; k < witnessCnt; k++) {
+                                var witness = new Witness();
+                                // witness.Size
+                                witness.Size = r.ReadVarInt();
+                                var witnessVl = r.ReadBytes((int)witness.Size);
+                                witness.WitnessValue = BitConverter.ToString(witnessVl).Replace("-", null);
+                                transaction.Witnesses.Add(witness);
+                            }
+                        }
+
+                    }
+                    var lockTime = r.ReadBytes(4);
+                    transaction.LockTime = BitConverter.ToString(lockTime).Replace("-", null);
+                    block.Transactions.Add(transaction);
                 }
+                blocks.Add(block);
             }
+            return blocks;
         }
 
         private bool ReadMagic(BinaryReader reader) {

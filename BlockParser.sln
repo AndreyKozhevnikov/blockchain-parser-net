@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockParser", "BlockParser\BlockParser.csproj", "{678B35F8-E8BD-4BD9-B268-E6F52716D476}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockParser", "BlockParser\BlockParser.csproj", "{678B35F8-E8BD-4BD9-B268-E6F52716D476}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Converter", "HashConverter\Converter.csproj", "{42125668-E87A-4321-8BE1-F370A4C2B673}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "HashConverter\Tests.csproj", "{42125668-E87A-4321-8BE1-F370A4C2B673}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
