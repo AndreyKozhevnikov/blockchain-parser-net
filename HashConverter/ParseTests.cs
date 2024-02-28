@@ -98,7 +98,22 @@ namespace Tests {
             var b = blockList[0];
             var t = b.Transactions[1];
             var o = t.Outputs[1];
-            Assert.AreEqual("14MMSkD4HyDrWetxD6TgZwe7nRXb8uKbSL", o.Address);
+            Assert.AreEqual("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej", o.Address);
+        }
+        
+                [Test]
+        public void Output_publicAddress4() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            var b = blockList[0];
+            var t = b.Transactions[2];
+            var o = t.Outputs[0];
+            Assert.AreEqual("31zVTJ78SqX9z9hYZLfSiJnwiEfqqGSNHQ", o.Address);
         }
     }
 }
