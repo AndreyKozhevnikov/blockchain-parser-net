@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 using BlockParser.Entities;
 using HashConverterNS;
 using Microsoft.VisualBasic;
-using NBitcoin;
 using NBitcoin.Crypto;
 using static NBitcoin.RPC.SignRawTransactionRequest;
 namespace BlockParser.Classes {
-    public static class MyExtension {
-
-    }
 
     public class Parser {
+
         private static DateTime _epochBaseDate = new DateTime(1970, 1, 1);
         public void Parse2() {
             //530849
@@ -51,12 +48,15 @@ namespace BlockParser.Classes {
 
             long txTemp = -1;
 
-            if (txCntFirst < 0xfd) txTemp = 0;
-            if (txCntFirst == 0xfd) txTemp = 1;
-            if (txCntFirst == 0xfe) txTemp = 2;
-            if (txCntFirst == 0xff) txTemp = 3;
+            if(txCntFirst < 0xfd) txTemp = 0;
+            if(txCntFirst == 0xfd) txTemp = 1;
+            if(txCntFirst == 0xfe) txTemp = 2;
+            if(txCntFirst == 0xff) txTemp = 3;
             // var txCount = BitConverter.ToInt32(txCountArr2);
         }
+
+
+
 
 
         public void Parse() {
@@ -77,10 +77,10 @@ namespace BlockParser.Classes {
             //    fileStream.Write(testArr, 0, testArr.Length);
             //}
             //
-
+            ScriptParser scriptParser = new ScriptParser();
 
             var blocks = new List<TBlock>();
-            while (ReadMagic(reader)) {
+            while(ReadMagic(reader)) {
                 //while (true) {
                 var block = new TBlock();
                 var stream = reader.BaseStream;
@@ -120,7 +120,7 @@ namespace BlockParser.Classes {
                 var _transactionCount = r.ReadVarInt();
                 block.TransactionCount = _transactionCount;
                 block.Transactions = new List<TTransaction>();
-                for (int i = 0; i < _transactionCount; i++) {
+                for(int i = 0; i < _transactionCount; i++) {
                     var transaction = new TTransaction();
                     transaction.Version = r.ReadUInt32();
 
@@ -130,13 +130,13 @@ namespace BlockParser.Classes {
                     transaction.InputCount = r.ReadVarInt();
 
                     // bool IsWitness = false;
-                    if (transaction.InputCount == 0) {
+                    if(transaction.InputCount == 0) {
                         r.Read();
                         transaction.InputCount = r.ReadVarInt();
                         transaction.HasWitness = true;
                     }
                     transaction.Inputs = new List<Input>();
-                    for (int j = 0; j < transaction.InputCount; j++) {
+                    for(int j = 0; j < transaction.InputCount; j++) {
                         var input = new Input();
                         var txfromhash = r.ReadBytes(32);
                         input.TxId = BitConverter.ToString(txfromhash).Replace("-", null);
@@ -153,7 +153,7 @@ namespace BlockParser.Classes {
                     }
                     transaction.OutputCount = r.ReadVarInt();
                     transaction.Outputs = new List<Output>();
-                    for (int j = 0; j < transaction.OutputCount; j++) {
+                    for(int j = 0; j < transaction.OutputCount; j++) {
                         var output = new Output();
                         //var testTx = r.ReadBytes(50000);
                         //var testST = BitConverter.ToString(testTx).Replace("-", null);
@@ -167,19 +167,23 @@ namespace BlockParser.Classes {
                         var script = r.ReadBytes((int)output.ScriptSize);
                         output.Script = BitConverter.ToString(script).Replace("-", null);
 
+                        var adr = scriptParser.GetAddressFromScript(script);
+                        output.Address = adr;
+
+
                         //get key - to do
                         //var publHash = script.SubArray(3, 20);
                         //var publicKeyHash = new KeyId(publHash);
-                        //var mainNetAddress = publicKeyHash.GetAddress(Network.Main);
+                        //var mainNetAddress = publicKeyHash.GetAddress(Network.Main); https://github.com/bitcoin/bitcoin/blob/0cda5573405d75d695aba417e8f22f1301ded001/src/script/standard.cpp#L156
                         //
                         transaction.Outputs.Add(output);
 
                     }
                     transaction.Witnesses = new List<Witness>();
-                    if (transaction.HasWitness) {
-                        for (int j = 0; j < transaction.InputCount; j++) {
+                    if(transaction.HasWitness) {
+                        for(int j = 0; j < transaction.InputCount; j++) {
                             var witnessCnt = r.ReadVarInt();
-                            for (int k = 0; k < witnessCnt; k++) {
+                            for(int k = 0; k < witnessCnt; k++) {
                                 var witness = new Witness();
                                 // witness.Size
                                 witness.Size = r.ReadVarInt();
@@ -203,16 +207,16 @@ namespace BlockParser.Classes {
             try {
             ini:
                 byte b0 = reader.ReadByte();
-                if (b0 != 0xF9) goto ini;
+                if(b0 != 0xF9) goto ini;
                 b0 = reader.ReadByte();
-                if (b0 != 0xbe) goto ini;
+                if(b0 != 0xbe) goto ini;
                 b0 = reader.ReadByte();
-                if (b0 != 0xb4) goto ini;
+                if(b0 != 0xb4) goto ini;
                 b0 = reader.ReadByte();
-                if (b0 != 0xd9) goto ini;
+                if(b0 != 0xd9) goto ini;
                 return true;
             }
-            catch (EndOfStreamException) {
+            catch(EndOfStreamException) {
                 return false;
             }
         }
@@ -235,13 +239,13 @@ namespace BlockParser.Classes {
         }
 
         static byte[] FlipInt16(byte[] rawData) {
-            for (var i = 0; i < rawData.Length; i += 2) // Step two for 2x8 bits=16
+            for(var i = 0; i < rawData.Length; i += 2) // Step two for 2x8 bits=16
                 Swap(ref rawData[i], ref rawData[i + 1]);
             return rawData;
         }
 
         static byte[] FlipInt32(byte[] rawData) {
-            for (var i = 0; i < rawData.Length; i += 4) {// Step four for 4x8 bits=32
+            for(var i = 0; i < rawData.Length; i += 4) {// Step four for 4x8 bits=32
                 Swap(ref rawData[i + 0], ref rawData[i + 2]);
                 Swap(ref rawData[i + 1], ref rawData[i + 3]);
             }
@@ -257,10 +261,10 @@ namespace BlockParser.Classes {
         }
         public static long ReadVarInt(this BinaryReader reader) {
             var t = reader.ReadByte();
-            if (t < 0xfd) return t;
-            if (t == 0xfd) return reader.ReadInt16();
-            if (t == 0xfe) return reader.ReadInt32();
-            if (t == 0xff) return reader.ReadInt64();
+            if(t < 0xfd) return t;
+            if(t == 0xfd) return reader.ReadInt16();
+            if(t == 0xfe) return reader.ReadInt32();
+            if(t == 0xff) return reader.ReadInt64();
 
             throw new InvalidDataException("Reading Var Int");
         }

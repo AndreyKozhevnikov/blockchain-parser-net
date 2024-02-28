@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿using HashConverterNS;
+using NUnit.Framework;
 
-namespace HashConverterNS {
+namespace Tests {
 
     [TestFixture]
     public class HashConverterTest {

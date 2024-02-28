@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Tests {
     [TestFixture]
-    public class ParseTests {
+    public class ParserTests {
 
         [Test]
-        public void TestBase1() {
+        public void BlockCommonInfo() {
             //arrange
             var parser = new Parser();
             var fl = File.OpenRead("oneBlockData.dat");
@@ -28,19 +28,77 @@ namespace Tests {
             Assert.AreEqual("0x20000000", b.VersionNumber);
             Assert.AreEqual("0x17347a28", b.Bits);
             Assert.AreEqual(2853688004, b.Nonce);
-        //    Assert.AreEqual("5363678461481", b.Difficulty);
             Assert.AreEqual(new DateTime(2018,7,7,7,52,59), b.TimeStamp);
+        }
 
-            
+        [Test]
+        public void Block_Hash() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            var b = blockList[0];
+            Assert.AreEqual("000000000000000000280e2daa0be4346cf4d52d3f8ee7aaf4839432a00d1a1a", b.Hash);
+        }
 
+        [Test]
+        public void Transaction_Hash() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            var b = blockList[0];
+            var t = b.Transactions[0];
+            Assert.AreEqual("fb15902777b7cac07fe2e99f2009fb6b34f2da7a7451b6afd316cd4e1bf8cc8c", t.Hash);
+        }
 
-            Assert.AreEqual("000000000000000000280E2DAA0BE4346CF4D52D3F8EE7AAF4839432A00D1A1A", b.Hash);
-
-
-
-
-
-
+        [Test]
+        public void Output_publicAddress1() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            var b = blockList[0];
+            var t = b.Transactions[0];
+            var o = t.Outputs[0];
+            Assert.AreEqual("1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE", o.Address);
+        }
+        [Test]
+        public void Output_publicAddress2() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            var b = blockList[0];
+            var t = b.Transactions[1];
+            var o = t.Outputs[0];
+            Assert.AreEqual("14MMSkD4HyDrWetxD6TgZwe7nRXb8uKbSL", o.Address);
+        }
+        [Test]
+        public void Output_publicAddress3() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            var b = blockList[0];
+            var t = b.Transactions[1];
+            var o = t.Outputs[1];
+            Assert.AreEqual("14MMSkD4HyDrWetxD6TgZwe7nRXb8uKbSL", o.Address);
         }
     }
 }
