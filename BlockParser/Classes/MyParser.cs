@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BlockParser.Entities;
 using HashConverterNS;
 using Microsoft.VisualBasic;
+using NBitcoin;
 using NBitcoin.Crypto;
 using static NBitcoin.RPC.SignRawTransactionRequest;
 namespace BlockParser.Classes {
@@ -91,6 +92,16 @@ namespace BlockParser.Classes {
                 //  var magic = r.ReadBytes(4); 
                 //  var magicST = BitConverter.ToString(magic); F9BEB4D9
 
+
+                var allArr = r.ReadBytes((int)r.BaseStream.Length);
+
+             //   var b1 = Block.Load(allArr, Network.Main);
+
+
+                var tst = new BlockHeader(allArr, Network.Main);
+
+                var tst2 = tst.GetHash();
+
                 var sizeA = r.ReadBytes(4);
 
                 var sizeArev = ReverseBytes(sizeA);
@@ -166,6 +177,16 @@ namespace BlockParser.Classes {
                         output.ScriptSize = r.ReadVarInt();
                         var script = r.ReadBytes((int)output.ScriptSize);
                         output.Script = BitConverter.ToString(script).Replace("-", null);
+
+                        //bool b = false;
+                        //if(b) {
+                        //    //test
+                        //    //var testArr = reader.ReadBytes(591562);
+                        //    //var testArrSt = BitConverter.ToString(testArr).Replace("-", null);
+                        //    using(FileStream fileStream = new FileStream("script1.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+                        //        fileStream.Write(script, 0, script.Length);
+                        //    }
+                        //}
 
                         var adr = scriptParser.GetAddressFromScript(script);
                         output.Address = adr;

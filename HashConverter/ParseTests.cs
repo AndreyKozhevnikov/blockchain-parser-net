@@ -14,7 +14,7 @@ namespace Tests {
         public void BlockCommonInfo() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader=new BinaryReader(fl);
             //act
             var blockList=parser.ParseCore(reader);
@@ -35,7 +35,7 @@ namespace Tests {
         public void Block_Hash() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
             var blockList = parser.ParseCore(reader);
@@ -48,7 +48,7 @@ namespace Tests {
         public void Transaction_Hash() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
             var blockList = parser.ParseCore(reader);
@@ -62,7 +62,7 @@ namespace Tests {
         public void Output_publicAddress1() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
             var blockList = parser.ParseCore(reader);
@@ -76,7 +76,7 @@ namespace Tests {
         public void Output_publicAddress2() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
             var blockList = parser.ParseCore(reader);
@@ -90,7 +90,7 @@ namespace Tests {
         public void Output_publicAddress3() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
             var blockList = parser.ParseCore(reader);
@@ -105,7 +105,7 @@ namespace Tests {
         public void Output_publicAddress4() {
             //arrange
             var parser = new Parser();
-            var fl = File.OpenRead("oneBlockData.dat");
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
             var blockList = parser.ParseCore(reader);

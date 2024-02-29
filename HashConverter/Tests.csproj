@@ -8,10 +8,22 @@
 
   <ItemGroup>
     <None Remove="oneBlockData.dat" />
+    <None Remove="TestData\script1.dat" />
+    <None Remove="TestData\script3.dat" />
+    <None Remove="TestData\scriptB.dat" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="oneBlockData.dat">
+    <EmbeddedResource Include="TestData\oneBlockData.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\script1.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\script3.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\scriptB.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
