@@ -84,6 +84,8 @@ namespace BlockParser.Classes {
             while(ReadMagic(reader)) {
                 //while (true) {
                 var block = new TBlock();
+
+                List<byte> blockHex = new List<byte>();
                 var stream = reader.BaseStream;
                 var _position = stream.Position;
 
@@ -93,14 +95,14 @@ namespace BlockParser.Classes {
                 //  var magicST = BitConverter.ToString(magic); F9BEB4D9
 
 
-                var allArr = r.ReadBytes((int)r.BaseStream.Length);
+             //   var allArr = r.ReadBytes((int)r.BaseStream.Length);
 
-             //   var b1 = Block.Load(allArr, Network.Main);
+             ////   var b1 = Block.Load(allArr, Network.Main);
 
 
-                var tst = new BlockHeader(allArr, Network.Main);
+             //   var tst = new BlockHeader(allArr, Network.Main);
 
-                var tst2 = tst.GetHash();
+             //   var tst2 = tst.GetHash();
 
                 var sizeA = r.ReadBytes(4);
 
@@ -109,9 +111,11 @@ namespace BlockParser.Classes {
 
                 block.Size = BitConverter.ToInt32(sizeA);
                 var versionNumberVal = r.ReadBytes(4);
+                blockHex.AddRange(versionNumberVal);
                 var versionNumberValST = BitConverter.ToString(versionNumberVal).Replace("-", null);
                 block.VersionNumber = "0x" + HashConverter.Convert(versionNumberValST);
                 var _previousBlockHash = r.ReadBytes(32);
+                blockHex.AddRange(_previousBlockHash);
                 var st0 = BitConverter.ToString(_previousBlockHash).Replace("-", null);
                 byte[] bytes = Encoding.Unicode.GetBytes(st0);
                 byte[] bytes2 = HashConverter.StringToByteArray(st0);
@@ -119,50 +123,91 @@ namespace BlockParser.Classes {
                 var prevH = HashConverter.Convert(st0); //!!
                 block.PrevBlockHash = prevH;
                 var _merkleRoot = r.ReadBytes(32);
+                blockHex.AddRange(_merkleRoot);
                 var tmpMerkle = BitConverter.ToString(_merkleRoot).Replace("-", null);
                 block.MerkleRoot = HashConverter.Convert(tmpMerkle);
-                block.TimeStamp = _epochBaseDate.AddSeconds(r.ReadUInt32());
+                List<byte> tmpByte= new List<byte>(r.ReadBytes(4));
+                var timpStampTx = BitConverter.ToUInt32(tmpByte.ToArray());
+                block.TimeStamp = _epochBaseDate.AddSeconds(timpStampTx);
+                blockHex.AddRange(tmpByte);
+                tmpByte.Clear();
                 var bitsBytes = r.ReadBytes(4);
-
+                blockHex.AddRange(bitsBytes);
                 var bitST = BitConverter.ToString(bitsBytes).Replace("-", null);  //https://learnmeabitcoin.com/technical/bits
                 block.Bits = "0x" + HashConverter.Convert(bitST);
                 // block.Bits = r.re();
-                block.Nonce = r.ReadUInt32();
+                tmpByte = new List<byte>(r.ReadBytes(4));
+                var nonceTx = BitConverter.ToUInt32(tmpByte.ToArray());
+                block.Nonce = nonceTx;
+                blockHex.AddRange(tmpByte);
+                tmpByte.Clear();
+
                 var _transactionCount = r.ReadVarInt();
                 block.TransactionCount = _transactionCount;
                 block.Transactions = new List<TTransaction>();
+
+                var txHashConverter = new TxByteToHashConverter();
+                block.Hash = txHashConverter.Convert(blockHex);
+
                 for(int i = 0; i < _transactionCount; i++) {
+
+                    List<byte> transactionHEX = new List<byte>(); 
                     var transaction = new TTransaction();
-                    transaction.Version = r.ReadUInt32();
+
+                   // var ts = r.ReadUInt32();
+                     tmpByte =new List<byte>( r.ReadBytes(4));
+                    transactionHEX.AddRange(tmpByte);
+                    
+
+                    transaction.Version = BitConverter.ToUInt32(tmpByte.ToArray());
 
                     //var testTx = r.ReadBytes(50000);
                     //var testST = BitConverter.ToString(testTx).Replace("-", null);
 
-                    transaction.InputCount = r.ReadVarInt();
+                    
+                    transaction.InputCount = r.ReadVarIntOut(tmpByte);
+                 
 
                     // bool IsWitness = false;
                     if(transaction.InputCount == 0) {
                         r.Read();
-                        transaction.InputCount = r.ReadVarInt();
+                       
+                        transaction.InputCount = r.ReadVarIntOut(tmpByte);
+                        transactionHEX.AddRange(tmpByte);
+                        tmpByte.Clear();
                         transaction.HasWitness = true;
                     }
+                    else {
+                        transactionHEX.AddRange(tmpByte);
+                        tmpByte.Clear();
+                    }
+
+                   // var tst= BitConverter.ToString(transactionHEX.ToArray()).Replace("-", null);
                     transaction.Inputs = new List<Input>();
                     for(int j = 0; j < transaction.InputCount; j++) {
                         var input = new Input();
                         var txfromhash = r.ReadBytes(32);
+                        transactionHEX.AddRange(txfromhash);
                         input.TxId = BitConverter.ToString(txfromhash).Replace("-", null);
 
                         var nOutput = r.ReadBytes(4);
+                        transactionHEX.AddRange(nOutput);
                         var nOutputTx = BitConverter.ToString(nOutput).Replace("-", null);
                         input.OutputNumber = nOutputTx;
-                        input.ScriptLength = r.ReadVarInt();
+
+                        input.ScriptLength = r.ReadVarIntOut(tmpByte);
+                        transactionHEX.AddRange(tmpByte);
                         var script = r.ReadBytes((int)input.ScriptLength);
+                        transactionHEX.AddRange(script);
                         input.Script = BitConverter.ToString(script).Replace("-", null);
                         var seqNumber = r.ReadBytes(4);
+                        transactionHEX.AddRange(seqNumber);
                         input.Sequence = BitConverter.ToString(seqNumber).Replace("-", null);
                         transaction.Inputs.Add(input);
                     }
-                    transaction.OutputCount = r.ReadVarInt();
+                    
+                    transaction.OutputCount = r.ReadVarIntOut(tmpByte);
+                    transactionHEX.AddRange(tmpByte);
                     transaction.Outputs = new List<Output>();
                     for(int j = 0; j < transaction.OutputCount; j++) {
                         var output = new Output();
@@ -170,12 +215,15 @@ namespace BlockParser.Classes {
                         //var testST = BitConverter.ToString(testTx).Replace("-", null);
 
                         var outVala = r.ReadBytes(8);
+                        transactionHEX.AddRange(outVala);
                         var outValaa = ReverseBytes(outVala);
                         output.Value = BitConverter.ToInt32(outVala);
 
 
-                        output.ScriptSize = r.ReadVarInt();
+                        output.ScriptSize = r.ReadVarIntOut(tmpByte);
+                        transactionHEX.AddRange(tmpByte);
                         var script = r.ReadBytes((int)output.ScriptSize);
+                        transactionHEX.AddRange(script);
                         output.Script = BitConverter.ToString(script).Replace("-", null);
 
                         //bool b = false;
@@ -200,6 +248,7 @@ namespace BlockParser.Classes {
                         transaction.Outputs.Add(output);
 
                     }
+                    // var tst= BitConverter.ToString(transactionHEX.ToArray()).Replace("-", null);
                     transaction.Witnesses = new List<Witness>();
                     if(transaction.HasWitness) {
                         for(int j = 0; j < transaction.InputCount; j++) {
@@ -216,8 +265,16 @@ namespace BlockParser.Classes {
 
                     }
                     var lockTime = r.ReadBytes(4);
+                    transactionHEX.AddRange(lockTime);
                     transaction.LockTime = BitConverter.ToString(lockTime).Replace("-", null);
+                    
+                    transaction.Hash = txHashConverter.Convert(transactionHEX);
+
                     block.Transactions.Add(transaction);
+                    //using(FileStream fileStream = new FileStream("txHashBytes.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+                    //    fileStream.Write(transactionHEX.ToArray(), 0, transactionHEX.Count);
+                    //}
+                 //   var tst = BitConverter.ToString(transactionHEX.ToArray()).Replace("-", null);
                 }
                 blocks.Add(block);
             }
@@ -280,13 +337,41 @@ namespace BlockParser.Classes {
             Array.Copy(array, offset, result, 0, length);
             return result;
         }
+        public static long ReadVarIntOut(this BinaryReader reader, List<byte> tmp) {
+            tmp.Clear();
+            var t = reader.ReadByte();
+            if(t < 0xfd) {
+                tmp.Add(t);
+                return t;
+
+            }
+            if(t == 0xfd) {
+
+                tmp = new List<byte>(reader.ReadBytes(2));
+                return BitConverter.ToInt16(tmp.ToArray());
+
+            }
+            if(t == 0xfe) {
+                tmp = new List<byte>(reader.ReadBytes(4));
+                return BitConverter.ToInt32(tmp.ToArray());
+
+            }
+            if(t == 0xff) {
+                tmp = new List<byte>(reader.ReadBytes(8));
+                return BitConverter.ToInt64(tmp.ToArray());
+                
+
+            }
+
+            throw new InvalidDataException("Reading Var Int");
+        }
+
         public static long ReadVarInt(this BinaryReader reader) {
             var t = reader.ReadByte();
             if(t < 0xfd) return t;
             if(t == 0xfd) return reader.ReadInt16();
             if(t == 0xfe) return reader.ReadInt32();
             if(t == 0xff) return reader.ReadInt64();
-
             throw new InvalidDataException("Reading Var Int");
         }
     }

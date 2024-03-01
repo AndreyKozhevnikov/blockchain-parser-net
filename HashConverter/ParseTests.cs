@@ -30,7 +30,27 @@ namespace Tests {
             Assert.AreEqual(2853688004, b.Nonce);
             Assert.AreEqual(new DateTime(2018,7,7,7,52,59), b.TimeStamp);
         }
+        [Test]
+        public void TransactionCommonInfo() {
+            //arrange
+            var parser = new Parser();
+            var fl = File.OpenRead("testdata\\oneBlockData.dat");
+            var reader = new BinaryReader(fl);
+            //act
+            var blockList = parser.ParseCore(reader);
+            //assert
+            Assert.AreEqual(1, blockList.Count);
+            var b = blockList[0];
+            Assert.AreEqual(1305, b.TransactionCount);
+            var t = b.Transactions[0];
 
+            Assert.AreEqual(true, t.HasWitness);
+            Assert.AreEqual(1, t.InputCount);
+            Assert.AreEqual(1, t.Version);
+            Assert.AreEqual("00000000", t.LockTime);
+            Assert.AreEqual(3, t.OutputCount);
+
+        }
         [Test]
         public void Block_Hash() {
             //arrange

@@ -11,6 +11,7 @@
     <None Remove="TestData\script1.dat" />
     <None Remove="TestData\script3.dat" />
     <None Remove="TestData\scriptB.dat" />
+    <None Remove="TestData\txHashBytes.dat" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="TestData\scriptB.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\txHashBytes.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
