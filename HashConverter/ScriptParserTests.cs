@@ -18,7 +18,7 @@ namespace Tests {
             var parser = new ScriptParser();
             var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
             //act
-            var res = parser.ExtractDestination(bytes);
+            var res = parser.GetAddressFromScript(bytes);
             //Assert
             Assert.AreEqual("1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE", res);
         }
@@ -30,7 +30,7 @@ namespace Tests {
             var parser = new ScriptParser();
             var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
             //act
-            var res = parser.ExtractDestination(bytes);
+            var res = parser.GetAddressFromScript(bytes);
             //Assert
             Assert.AreEqual("31zVTJ78SqX9z9hYZLfSiJnwiEfqqGSNHQ", res);
         }
@@ -42,7 +42,7 @@ namespace Tests {
             var parser = new ScriptParser();
             var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
             //act
-            var res = parser.ExtractDestination(bytes);
+            var res = parser.GetAddressFromScript(bytes);
             //Assert
             Assert.AreEqual("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej", res);
         }
