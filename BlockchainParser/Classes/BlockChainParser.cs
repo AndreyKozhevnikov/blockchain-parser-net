@@ -91,9 +91,9 @@ public class BlockChainParser {
                     tmpByte.Clear();
                 }
 
-                transaction.Inputs = new List<Input>();
+                transaction.Inputs = new List<TInput>();
                 for (int j = 0; j < transaction.InputCount; j++) {
-                    var input = new Input();
+                    var input = new TInput();
                     var _txIDBT = r.ReadBytes(32);
                     transactionHEX.AddRange(_txIDBT);
                     _txIDBT = ReverseBytes(_txIDBT);
@@ -119,9 +119,9 @@ public class BlockChainParser {
                 transaction.OutputCount = r.ReadVarIntOut(tmpByte);
                 transactionHEX.AddRange(tmpByte);
 
-                transaction.Outputs = new List<Output>();
+                transaction.Outputs = new List<TOutput>();
                 for (int j = 0; j < transaction.OutputCount; j++) {
-                    var output = new Output();
+                    var output = new TOutput();
                     var _outValueBT = r.ReadBytes(8);
                     transactionHEX.AddRange(_outValueBT);
                     output.Value = BitConverter.ToInt32(_outValueBT);

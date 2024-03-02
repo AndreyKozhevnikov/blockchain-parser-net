@@ -8,8 +8,8 @@ public class TTransaction {
     public long OutputCount { get; set; }
     public bool HasWitness { get; set; }
 
-    public List<Input> Inputs { get; set; }
-    public List<Output> Outputs { get; set; }
+    public List<TInput> Inputs { get; set; }
+    public List<TOutput> Outputs { get; set; }
     public List<Witness> Witnesses { get; set; }
     public string LockTime { get; set; }
     public string Hash { get; set; }
