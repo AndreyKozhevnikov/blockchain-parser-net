@@ -86,7 +86,19 @@ public class ParserTests {
         var i = b.Transactions[1].Inputs[0];
         Assert.AreEqual("b0150d929fe9bf73cc065e74410bf828914f49e90d5cfbf6c12457c42364b9cc", i.TxId);
     }
-
+    [Test]
+    public void Input_OutputNumber() {
+        //arrange
+        var parser = new BlockChainParser();
+        var fl = File.OpenRead("testdata\\oneBlockData.dat");
+        var reader = new BinaryReader(fl);
+        //act
+        var blockList = parser.ParseCore(reader);
+        //assert
+        var b = blockList[0];
+        var i = b.Transactions[3].Inputs[0];
+        Assert.AreEqual(26, i.OutputNumber);
+    }
     [Test]
     public void Output_publicAddress1() {
         //arrange

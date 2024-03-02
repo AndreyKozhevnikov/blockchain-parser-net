@@ -101,7 +101,7 @@ public class BlockChainParser {
 
                     var _outputNumberBT = r.ReadBytes(4);
                     transactionHEX.AddRange(_outputNumberBT);
-                    input.OutputNumber = GetStringFromBytes(_outputNumberBT); ;
+                    input.OutputNumber = BitConverter.ToInt32(_outputNumberBT);
 
                     input.ScriptLength = r.ReadVarIntOut(tmpByte);
                     transactionHEX.AddRange(tmpByte);
