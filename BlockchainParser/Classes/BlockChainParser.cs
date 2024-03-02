@@ -4,16 +4,16 @@ namespace BlockParser;
 public class BlockChainParser {
 
     private static DateTime _epochBaseDate = new DateTime(1970, 1, 1);
-    public List<TBlock> Parse(string filePath) {
+    public List<TBlock> Parse(string filePath, bool parsetransactions = true) {
 
         var memFile = MemoryMappedFile.CreateFromFile(filePath, FileMode.Open, Path.GetFileName(filePath), 0, MemoryMappedFileAccess.Read);
         var viewStream = memFile.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
         var reader = new BinaryReader(viewStream);
-        var lst = ParseCore(reader);
+        var lst = ParseCore(reader, parsetransactions);
         return lst;
     }
 
-    public List<TBlock> ParseCore(BinaryReader reader) {
+    public List<TBlock> ParseCore(BinaryReader reader, bool parsetransactions = true) {
         //using (FileStream fileStream = new FileStream("oneBlockData.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
         //    fileStream.Write(testArr, 0, testArr.Length);
         //}
@@ -25,11 +25,13 @@ public class BlockChainParser {
             var block = new TBlock();
             List<byte> blockHex = new List<byte>();
             var stream = reader.BaseStream;
-            var r = new BinaryReader(stream);
+            var initr = new BinaryReader(stream);
 
-            var sizeBT = r.ReadBytes(4);
+            var sizeBT = initr.ReadBytes(4);
             block.Size = BitConverter.ToInt32(sizeBT);
-
+            var blockBytes = initr.ReadBytes(block.Size);
+            MemoryStream stream2 = new MemoryStream(blockBytes);
+            var r = new BinaryReader(stream2);
             var versionNumberBT = r.ReadBytes(4);
             blockHex.AddRange(versionNumberBT);
             versionNumberBT = ReverseBytes(versionNumberBT);
@@ -68,7 +70,10 @@ public class BlockChainParser {
 
             var txHashConverter = new TxByteToHashConverter();
             block.Hash = txHashConverter.Convert(blockHex);
-
+            blocks.Add(block);
+            if (parsetransactions == false) {
+                continue;
+            }
             for (int i = 0; i < _transactionCount; i++) {
 
                 List<byte> transactionHEX = new List<byte>();
@@ -162,7 +167,7 @@ public class BlockChainParser {
                 //    fileStream.Write(transactionHEX.ToArray(), 0, transactionHEX.Count);
                 //}
             }
-            blocks.Add(block);
+
         }
         return blocks;
     }
