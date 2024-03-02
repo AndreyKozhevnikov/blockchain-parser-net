@@ -96,6 +96,7 @@ public class BlockChainParser {
                     var input = new Input();
                     var _txIDBT = r.ReadBytes(32);
                     transactionHEX.AddRange(_txIDBT);
+                    _txIDBT = ReverseBytes(_txIDBT);
                     input.TxId = GetStringFromBytes(_txIDBT);
 
                     var _outputNumberBT = r.ReadBytes(4);
