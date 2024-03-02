@@ -3,7 +3,7 @@
 namespace BlockParser;
 [DebuggerDisplay("Address: {Address}")]
 public class TOutput {
-    public int Value { get; set; }
+    public long Value { get; set; }
     public long ScriptSize { get; set; }
     public string Script { get; set; }
 

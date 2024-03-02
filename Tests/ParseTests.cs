@@ -24,6 +24,9 @@ public class ParserTests {
         Assert.AreEqual("0x17347a28", b.Bits);
         Assert.AreEqual(2853688004, b.Nonce);
         Assert.AreEqual(new DateTime(2018, 7, 7, 7, 52, 59), b.TimeStamp);
+        var o = b.Transactions[0].Outputs[0];
+        Assert.AreEqual(1262779908, o.Value);
+        
     }
     [Test]
     public void TransactionCommonInfo() {
@@ -155,6 +158,37 @@ public class ParserTests {
         var t = b.Transactions[2];
         var o = t.Outputs[0];
         Assert.AreEqual("31zVTJ78SqX9z9hYZLfSiJnwiEfqqGSNHQ", o.Address);
+    }
+
+    [Test]
+    public void BlockCommonInfo_P2PK() {
+        //arrange
+        var parser = new BlockChainParser();
+        var fl = File.OpenRead("testdata\\oneBlockP2PK.dat");
+        var reader = new BinaryReader(fl);
+        //act
+        var blockList = parser.ParseCore(reader);
+        //assert
+        Assert.AreEqual(1, blockList.Count);
+        var b = blockList[0];
+        Assert.AreEqual("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f", b.Hash);
+        Assert.AreEqual("0000000000000000000000000000000000000000000000000000000000000000", b.PrevBlockHash);
+        Assert.AreEqual("4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b", b.MerkleRoot);
+        Assert.AreEqual(285, b.Size);
+        Assert.AreEqual(1, b.TransactionCount);
+        Assert.AreEqual("0x00000001", b.VersionNumber);
+        Assert.AreEqual("0x1d00ffff", b.Bits);
+        Assert.AreEqual(2083236893, b.Nonce);
+        Assert.AreEqual(new DateTime(2009, 1, 3, 18, 15, 05), b.TimeStamp);
+        Assert.AreEqual(1, b.TransactionCount);
+        var t = b.Transactions[0];
+        Assert.AreEqual(1, t.InputCount);
+        Assert.AreEqual(1, t.OutputCount);
+        var o = t.Outputs[0];
+        Assert.AreEqual(5000000000, o.Value);
+        Assert.AreEqual("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", o.Address);
+
+
     }
 }
 

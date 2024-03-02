@@ -5,8 +5,8 @@ namespace MyApp;
 internal class Program {
     static void Main(string[] args) {
         Console.WriteLine("Hello World!");
-        var filePath = "blk03331.dat";
+        var filePath = @"f:\bt\blk00000.dat";
         var prs = new BlockChainParser();
-        List<TBlock> result = prs.Parse(filePath,false);
+        List<TBlock> result = prs.Parse(filePath);
     }
 }

@@ -21,17 +21,35 @@ public class BlockChainParser {
         ScriptParser scriptParser = new ScriptParser();
 
         var blocks = new List<TBlock>();
-        while (ReadMagic(reader)) {
+        //---
+
+       // var testBT = reader.ReadBytes(289);
+
+        //using(FileStream fileStream = new FileStream("oneBlockP2PK.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+        //    fileStream.Write(testBT.ToArray(), 0, testBT.Count());
+        //}
+      //  var testST=GetStringFromBytes(testBT);
+
+        //----
+        while(ReadMagic(reader)) {
             var block = new TBlock();
             List<byte> blockHex = new List<byte>();
             var stream = reader.BaseStream;
             var initr = new BinaryReader(stream);
+            BinaryReader r;
+
+
 
             var sizeBT = initr.ReadBytes(4);
             block.Size = BitConverter.ToInt32(sizeBT);
-            var blockBytes = initr.ReadBytes(block.Size);
-            MemoryStream stream2 = new MemoryStream(blockBytes);
-            var r = new BinaryReader(stream2);
+            if(parsetransactions == false) {
+                var blockBytes = initr.ReadBytes(block.Size);
+                MemoryStream stream2 = new MemoryStream(blockBytes);
+                r = new BinaryReader(stream2);
+            }
+            else {
+                r = initr;
+            }
             var versionNumberBT = r.ReadBytes(4);
             blockHex.AddRange(versionNumberBT);
             versionNumberBT = ReverseBytes(versionNumberBT);
@@ -71,10 +89,10 @@ public class BlockChainParser {
             var txHashConverter = new TxByteToHashConverter();
             block.Hash = txHashConverter.Convert(blockHex);
             blocks.Add(block);
-            if (parsetransactions == false) {
+            if(parsetransactions == false) {
                 continue;
             }
-            for (int i = 0; i < _transactionCount; i++) {
+            for(int i = 0; i < _transactionCount; i++) {
 
                 List<byte> transactionHEX = new List<byte>();
                 var transaction = new TTransaction();
@@ -85,19 +103,20 @@ public class BlockChainParser {
 
                 transaction.InputCount = r.ReadVarIntOut(tmpByte);
 
-                if (transaction.InputCount == 0) {
+                if(transaction.InputCount == 0) {
                     r.Read();
                     transaction.InputCount = r.ReadVarIntOut(tmpByte);
                     transactionHEX.AddRange(tmpByte);
                     tmpByte.Clear();
                     transaction.HasWitness = true;
-                } else {
+                }
+                else {
                     transactionHEX.AddRange(tmpByte);
                     tmpByte.Clear();
                 }
 
                 transaction.Inputs = new List<TInput>();
-                for (int j = 0; j < transaction.InputCount; j++) {
+                for(int j = 0; j < transaction.InputCount; j++) {
                     var input = new TInput();
                     var _txIDBT = r.ReadBytes(32);
                     transactionHEX.AddRange(_txIDBT);
@@ -107,6 +126,7 @@ public class BlockChainParser {
                     var _outputNumberBT = r.ReadBytes(4);
                     transactionHEX.AddRange(_outputNumberBT);
                     input.OutputNumber = BitConverter.ToInt32(_outputNumberBT);
+                    //     transactionHEX.AddRange(tmpByte);
 
                     input.ScriptLength = r.ReadVarIntOut(tmpByte);
                     transactionHEX.AddRange(tmpByte);
@@ -125,11 +145,20 @@ public class BlockChainParser {
                 transactionHEX.AddRange(tmpByte);
 
                 transaction.Outputs = new List<TOutput>();
-                for (int j = 0; j < transaction.OutputCount; j++) {
+                for(int j = 0; j < transaction.OutputCount; j++) {
                     var output = new TOutput();
                     var _outValueBT = r.ReadBytes(8);
+
+                    var _outValueST = GetStringFromBytes(_outValueBT);
+
                     transactionHEX.AddRange(_outValueBT);
-                    output.Value = BitConverter.ToInt32(_outValueBT);
+                    output.Value = BitConverter.ToInt64(_outValueBT);
+                    //var testOut = BitConverter.ToInt64(_outValueBT);
+                    //   output.Value = BitConverter.ToInt32(_outValueBT);
+
+                    //var testBT = r.ReadBytes(1);
+                    //var testSt = GetStringFromBytes(testBT);
+
 
                     output.ScriptSize = r.ReadVarIntOut(tmpByte);
                     transactionHEX.AddRange(tmpByte);
@@ -138,16 +167,19 @@ public class BlockChainParser {
                     transactionHEX.AddRange(_scriptBT);
                     output.Script = GetStringFromBytes(_scriptBT);
 
+
+
+
                     var address = scriptParser.GetAddressFromScript(_scriptBT);
                     output.Address = address;
 
                     transaction.Outputs.Add(output);
                 }
                 transaction.Witnesses = new List<Witness>();
-                if (transaction.HasWitness) {
-                    for (int j = 0; j < transaction.InputCount; j++) {
+                if(transaction.HasWitness) {
+                    for(int j = 0; j < transaction.InputCount; j++) {
                         var witnessCnt = r.ReadVarInt();
-                        for (int k = 0; k < witnessCnt; k++) {
+                        for(int k = 0; k < witnessCnt; k++) {
                             var witness = new Witness();
                             witness.Size = r.ReadVarInt();
                             var witnessVl = r.ReadBytes((int)witness.Size);
@@ -176,16 +208,16 @@ public class BlockChainParser {
         try {
         ini:
             byte b0 = reader.ReadByte();
-            if (b0 != 0xF9) goto ini;
+            if(b0 != 0xF9) goto ini;
             b0 = reader.ReadByte();
-            if (b0 != 0xbe) goto ini;
+            if(b0 != 0xbe) goto ini;
             b0 = reader.ReadByte();
-            if (b0 != 0xb4) goto ini;
+            if(b0 != 0xb4) goto ini;
             b0 = reader.ReadByte();
-            if (b0 != 0xd9) goto ini;
+            if(b0 != 0xd9) goto ini;
             return true;
         }
-        catch (EndOfStreamException) {
+        catch(EndOfStreamException) {
             return false;
         }
     }
@@ -202,7 +234,7 @@ public class BlockChainParser {
     public static byte[] StringToByteArray(String hex) {
         int NumberChars = hex.Length;
         byte[] bytes = new byte[NumberChars / 2];
-        for (int i = 0; i < NumberChars; i += 2)
+        for(int i = 0; i < NumberChars; i += 2)
             bytes[i / 2] = System.Convert.ToByte(hex.Substring(i, 2), 16);
         return bytes;
     }
