@@ -1,4 +1,7 @@
-﻿namespace BlockParser;
+﻿using System.Diagnostics;
+
+namespace BlockParser;
+[DebuggerDisplay("Address: {Address}")]
 public class Output {
     public int Value { get; set; }
     public long ScriptSize { get; set; }

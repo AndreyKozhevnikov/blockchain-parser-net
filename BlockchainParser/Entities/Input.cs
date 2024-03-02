@@ -1,4 +1,7 @@
-﻿namespace BlockParser;
+﻿using System.Diagnostics;
+
+namespace BlockParser;
+[DebuggerDisplay("TxId: {TxId}")]
 public class Input {
     public string TxId { get; set; }
     public string OutputNumber { get; set; }

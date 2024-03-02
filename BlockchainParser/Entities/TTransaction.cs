@@ -1,4 +1,7 @@
-﻿namespace BlockParser;
+﻿using System.Diagnostics;
+
+namespace BlockParser;
+[DebuggerDisplay("Transaction: {Hash}")]
 public class TTransaction {
     public uint Version { get; set; }
     public long InputCount { get; set; }
