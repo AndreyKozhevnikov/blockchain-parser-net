@@ -1,4 +1,4 @@
-Parses blk*.dat files into .NET classes
+Parses blk*.dat files into .NET objects
 
 
 # Creates a list of objects with the following data structure:
