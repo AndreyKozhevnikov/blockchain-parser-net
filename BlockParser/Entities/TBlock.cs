@@ -14,11 +14,8 @@ namespace BlockParser.Entities {
         public DateTime TimeStamp { get; set; }
         public string Bits { get; set; }
         public uint Nonce { get; set; }
-        public string Locktime { get; set; }
-
         public long TransactionCount { get; set; }
-
         public List<TTransaction> Transactions { get; set; }
-        public string Difficulty { get; set; }
+        
     }
 }

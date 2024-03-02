@@ -1,12 +1,14 @@
 ﻿using BlockParser.Classes;
+using BlockParser.Entities;
 using System;
 
 namespace MyApp {
     internal class Program {
         static void Main(string[] args) {
             Console.WriteLine("Hello World!");
-            var prs = new Parser();
-            prs.Parse();
+            var filePath = "blk01307.dat";
+            var prs = new BlockChainParser();
+            List<TBlock> result = prs.Parse(filePath);
         }
     }
 }

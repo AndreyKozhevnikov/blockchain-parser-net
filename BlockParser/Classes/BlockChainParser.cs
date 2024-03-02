@@ -2,15 +2,16 @@
 using System.IO.MemoryMappedFiles;
 namespace BlockParser.Classes {
 
-    public class Parser {
+    public class BlockChainParser {
 
         private static DateTime _epochBaseDate = new DateTime(1970, 1, 1);
-        public void Parse() {
-            var fl = "blk01307.dat";
-            var memFile = MemoryMappedFile.CreateFromFile(fl, FileMode.Open, Path.GetFileName(fl), 0, MemoryMappedFileAccess.Read);
+        public List<TBlock> Parse(string filePath) {
+          
+            var memFile = MemoryMappedFile.CreateFromFile(filePath, FileMode.Open, Path.GetFileName(filePath), 0, MemoryMappedFileAccess.Read);
             var viewStream = memFile.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
             var reader = new BinaryReader(viewStream);
             var lst = ParseCore(reader);
+            return lst;
         }
 
         public List<TBlock> ParseCore(BinaryReader reader) {

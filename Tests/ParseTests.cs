@@ -13,7 +13,7 @@ namespace Tests {
         [Test]
         public void BlockCommonInfo() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader=new BinaryReader(fl);
             //act
@@ -33,7 +33,7 @@ namespace Tests {
         [Test]
         public void TransactionCommonInfo() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
@@ -54,7 +54,7 @@ namespace Tests {
         [Test]
         public void Block_Hash() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
@@ -67,7 +67,7 @@ namespace Tests {
         [Test]
         public void Transaction_Hash() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
@@ -81,7 +81,7 @@ namespace Tests {
         [Test]
         public void Output_publicAddress1() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
@@ -95,7 +95,7 @@ namespace Tests {
         [Test]
         public void Output_publicAddress2() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
@@ -109,7 +109,7 @@ namespace Tests {
         [Test]
         public void Output_publicAddress3() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
@@ -124,7 +124,7 @@ namespace Tests {
                 [Test]
         public void Output_publicAddress4() {
             //arrange
-            var parser = new Parser();
+            var parser = new BlockChainParser();
             var fl = File.OpenRead("testdata\\oneBlockData.dat");
             var reader = new BinaryReader(fl);
             //act
