@@ -31,7 +31,25 @@ public class BlockChainParser {
         //  var testST=GetStringFromBytes(testBT);
 
         //----
+        //bool myFlag = false;
+        //string prevBlockHash;
         while(ReadMagic(reader)) {
+
+            //if(myFlag) {
+            //    var b = 34;
+            //    var testBT = reader.ReadBytes(36741);
+            //    var magic = new byte[4];
+            //    magic[0] = 0xF9;
+            //    magic[1] = 0xbe;
+            //    magic[2] = 0xb4;
+            //    magic[3] = 0xd9;
+
+            //    var res = magic.Concat(testBT).ToArray();
+            //    using(FileStream fileStream = new FileStream("oneBlockcase1.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+            //        fileStream.Write(res.ToArray(), 0, res.Count());
+            //    }
+            //}
+
             var block = new TBlock();
             List<byte> blockHex = new List<byte>();
             var stream = reader.BaseStream;
@@ -197,7 +215,10 @@ public class BlockChainParser {
                 //    fileStream.Write(transactionHEX.ToArray(), 0, transactionHEX.Count);
                 //}
             }
-
+            //prevBlockHash = block.Hash;
+            //if(prevBlockHash == "00000000c80063f4d7d78c82a3ef86bf60bfa09a11caa43b1461270c4d9890d1") {
+            //    myFlag = true;
+            //}
         }
         return blocks;
     }

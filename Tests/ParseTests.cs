@@ -190,5 +190,33 @@ public class ParserTests {
 
 
     }
+
+    [Test]
+    public void BlockCommonInfo_case1() {
+        //arrange
+        var parser = new BlockChainParser();
+        var fl = File.OpenRead("testdata\\oneBlockcase1.dat");
+        var reader = new BinaryReader(fl);
+        //act
+        var blockList = parser.ParseCore(reader);
+        //assert
+        Assert.AreEqual(1, blockList.Count);
+        var b = blockList[0];
+        Assert.AreEqual("00000000afe94c578b4dc327aa64e1203283c5fd5f152ce886341766298cf523", b.Hash);
+        Assert.AreEqual("000000007da75864998b222da93fc061191ec3cb0063d42b55ee864ee8d82b60", b.PrevBlockHash);
+        Assert.AreEqual("c5997d1cad40afec154aa99b8988e97b1f113d8076357a77572455574765a533", b.MerkleRoot);
+   
+        Assert.AreEqual(2, b.TransactionCount);
+   
+        Assert.AreEqual(new DateTime(2009, 12, 14, 3, 28, 09), b.TimeStamp);
+        var t0 = b.Transactions[0];
+        var t1 = b.Transactions[1];
+        Assert.AreEqual("0e0abb91667c0bb906e9ed8bbbfb5876fccb707c2d9e7dab3603b57f41ec431f", t0.Hash);
+        Assert.AreEqual("3a5769fb2126d870aded5fcaced3bc49fa9768436101895931adb5246e41e957", t1.Hash);
+        var o = b.Transactions[1].Outputs[0];
+        Assert.AreEqual(1262779908, o.Value); //to change
+        Assert.AreEqual("1LPaBQDXUkzav1hNAHZKpAf1upqjzuoprU", o.Address);
+
+    }
 }
 
