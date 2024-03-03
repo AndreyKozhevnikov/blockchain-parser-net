@@ -23,12 +23,12 @@ public class BlockChainParser {
         var blocks = new List<TBlock>();
         //---
 
-       // var testBT = reader.ReadBytes(289);
+        // var testBT = reader.ReadBytes(289);
 
         //using(FileStream fileStream = new FileStream("oneBlockP2PK.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
         //    fileStream.Write(testBT.ToArray(), 0, testBT.Count());
         //}
-      //  var testST=GetStringFromBytes(testBT);
+        //  var testST=GetStringFromBytes(testBT);
 
         //----
         while(ReadMagic(reader)) {
@@ -46,8 +46,7 @@ public class BlockChainParser {
                 var blockBytes = initr.ReadBytes(block.Size);
                 MemoryStream stream2 = new MemoryStream(blockBytes);
                 r = new BinaryReader(stream2);
-            }
-            else {
+            } else {
                 r = initr;
             }
             var versionNumberBT = r.ReadBytes(4);
@@ -109,8 +108,7 @@ public class BlockChainParser {
                     transactionHEX.AddRange(tmpByte);
                     tmpByte.Clear();
                     transaction.HasWitness = true;
-                }
-                else {
+                } else {
                     transactionHEX.AddRange(tmpByte);
                     tmpByte.Clear();
                 }

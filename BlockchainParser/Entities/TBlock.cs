@@ -9,6 +9,7 @@ namespace BlockParser;
 [DebuggerDisplay("Block: {Hash}")]
 public class TBlock {
     public int Size { get; set; }
+    public int Height { get; set; }
     public string VersionNumber { get; set; }
     public string PrevBlockHash { get; set; }
     public string Hash { get; set; }
