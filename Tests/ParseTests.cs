@@ -214,7 +214,7 @@ public class ParserTests {
         Assert.AreEqual("0e0abb91667c0bb906e9ed8bbbfb5876fccb707c2d9e7dab3603b57f41ec431f", t0.Hash);
         Assert.AreEqual("3a5769fb2126d870aded5fcaced3bc49fa9768436101895931adb5246e41e957", t1.Hash);
         var o = b.Transactions[1].Outputs[0];
-        Assert.AreEqual(1262779908, o.Value); //to change
+        Assert.AreEqual(1595435000000, o.Value); //to change
         Assert.AreEqual("1LPaBQDXUkzav1hNAHZKpAf1upqjzuoprU", o.Address);
 
     }

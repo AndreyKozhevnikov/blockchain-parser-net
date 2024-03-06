@@ -14,7 +14,7 @@
     <None Remove="TestData\script3.dat" />
     <None Remove="TestData\scriptB.dat" />
     <None Remove="TestData\scriptP2PK.dat" />
-    <None Remove="TestData\scriptP2PK_1.dat" />
+    <None Remove="TestData\scriptp2pk_1.dat" />
     <None Remove="TestData\txHashBytes.dat" />
   </ItemGroup>
 
@@ -40,7 +40,7 @@
     <EmbeddedResource Include="TestData\scriptP2PK.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="TestData\scriptP2PK_1.dat">
+    <EmbeddedResource Include="TestData\scriptp2pk_1.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="TestData\txHashBytes.dat">
