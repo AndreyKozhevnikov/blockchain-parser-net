@@ -31,13 +31,13 @@ public class BlockChainParser {
         //  var testST=GetStringFromBytes(testBT);
 
         //----
-        //bool myFlag = false;
+      //  bool myFlag = false;
         //string prevBlockHash;
         while(ReadMagic(reader)) {
 
             //if(myFlag) {
             //    var b = 34;
-            //    var testBT = reader.ReadBytes(36741);
+            //    var testBT = reader.ReadBytes(36745);
             //    var magic = new byte[4];
             //    magic[0] = 0xF9;
             //    magic[1] = 0xbe;
@@ -45,7 +45,7 @@ public class BlockChainParser {
             //    magic[3] = 0xd9;
 
             //    var res = magic.Concat(testBT).ToArray();
-            //    using(FileStream fileStream = new FileStream("oneBlockcase1.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+            //    using(FileStream fileStream = new FileStream("oneBlockcase12.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
             //        fileStream.Write(res.ToArray(), 0, res.Count());
             //    }
             //}
@@ -105,6 +105,9 @@ public class BlockChainParser {
 
             var txHashConverter = new TxByteToHashConverter();
             block.Hash = txHashConverter.Convert(blockHex);
+            //if(block.Hash== "00000000c80063f4d7d78c82a3ef86bf60bfa09a11caa43b1461270c4d9890d1") {
+            //    var b = 3;
+            //}
             blocks.Add(block);
             if(parsetransactions == false) {
                 continue;
@@ -118,11 +121,11 @@ public class BlockChainParser {
                 transactionHEX.AddRange(tmpByte);
                 transaction.Version = BitConverter.ToUInt32(tmpByte.ToArray());
 
-                transaction.InputCount = r.ReadVarIntOut(tmpByte);
+                transaction.InputCount = r.ReadVarIntOut(out tmpByte);
 
                 if(transaction.InputCount == 0) {
                     r.Read();
-                    transaction.InputCount = r.ReadVarIntOut(tmpByte);
+                    transaction.InputCount = r.ReadVarIntOut(out tmpByte);
                     transactionHEX.AddRange(tmpByte);
                     tmpByte.Clear();
                     transaction.HasWitness = true;
@@ -144,7 +147,7 @@ public class BlockChainParser {
                     input.OutputNumber = BitConverter.ToInt32(_outputNumberBT);
                     //     transactionHEX.AddRange(tmpByte);
 
-                    input.ScriptLength = r.ReadVarIntOut(tmpByte);
+                    input.ScriptLength = r.ReadVarIntOut(out tmpByte);
                     transactionHEX.AddRange(tmpByte);
 
                     var _scriptBT = r.ReadBytes((int)input.ScriptLength);
@@ -157,7 +160,7 @@ public class BlockChainParser {
                     transaction.Inputs.Add(input);
                 }
 
-                transaction.OutputCount = r.ReadVarIntOut(tmpByte);
+                transaction.OutputCount = r.ReadVarIntOut(out tmpByte);
                 transactionHEX.AddRange(tmpByte);
 
                 transaction.Outputs = new List<TOutput>();
@@ -176,7 +179,7 @@ public class BlockChainParser {
                     //var testSt = GetStringFromBytes(testBT);
 
 
-                    output.ScriptSize = r.ReadVarIntOut(tmpByte);
+                    output.ScriptSize = r.ReadVarIntOut(out tmpByte);
                     transactionHEX.AddRange(tmpByte);
 
                     var _scriptBT = r.ReadBytes((int)output.ScriptSize);
@@ -207,6 +210,8 @@ public class BlockChainParser {
                 var _lockTimeBT = r.ReadBytes(4);
                 transactionHEX.AddRange(_lockTimeBT);
                 transaction.LockTime = GetStringFromBytes(_lockTimeBT);
+
+             //   var stringHash = GetStringFromBytes(transactionHEX.ToArray());
 
                 transaction.Hash = txHashConverter.Convert(transactionHEX);
 

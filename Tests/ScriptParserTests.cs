@@ -57,12 +57,16 @@ public class ScriptParserTests {
     }
     [Test]
     [Ignore("failed p2pk transaction 7729045ec9b7cfe62811c7fee5b9b2839a1e45f3827867776b6671cabae84462")]
-    //transaction 7729045ec9b7cfe62811c7fee5b9b2839a1e45f3827867776b6671cabae84462
+    //transaction 7729045ec9b7cfe62811c7fee5b9b2839a1e45f3827867776b6671cabae84462 public key is not valid https://learnmeabitcoin.com/technical/keys/address/#base58-address-tool
     public void ParseAddress1_P2PK_1() {
         //arrange
         var fl = File.OpenRead("testdata\\scriptP2PK_1.dat");
         var reader = new BinaryReader(fl);
         var parser = new ScriptParser();
+
+      //  var tst = reader.Read();
+
+
         var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
         //act
         var res = parser.GetAddressFromScript(bytes);
