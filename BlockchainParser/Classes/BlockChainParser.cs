@@ -215,7 +215,11 @@ public class BlockChainParser {
                             var inp = transaction.Inputs[j];
                             if(inp.ScriptLength != 0) {
                                 inp.OutputPublicKey = w1.WitnessValue;
-                                //inp.OutputAddress=keyGen.
+                                var publBytes = Convert.FromHexString(inp.OutputPublicKey);
+                                var adrs = keyGen.GenerateFromCompressedPublicKeyBytes(publBytes);
+                                if(inp.ScriptLength != 0) {
+                                    inp.OutputAddress = adrs.Addresses[1];
+                                }
                             }
                         }
                     }
