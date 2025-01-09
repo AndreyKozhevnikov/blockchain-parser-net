@@ -8,6 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="NBitcoin" Version="7.0.36" />
+    <PackageReference Include="Secp256k1.Native" Version="0.1.23" />
+    <PackageReference Include="Secp256k1.Net" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="KeyGen">
+      <HintPath>..\..\KeyGenerator\KeyGen\bin\Release\net6.0\KeyGen.dll</HintPath>
+    </Reference>
+    <Reference Include="plainSec256k1">
+      <HintPath>..\..\KeyGenerator\KeyGen\bin\Release\net6.0\plainSec256k1.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

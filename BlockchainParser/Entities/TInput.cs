@@ -9,5 +9,9 @@ public class TInput {
     public string Script { get; set; }
     public string Sequence { get; set; }
 
+    public string OutputPublicKey { get; set; }
+    public string OutputAddress { get; set; }
+    public string OutputNonce { get; set; }
+
 }
 

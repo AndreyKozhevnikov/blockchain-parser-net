@@ -1,4 +1,5 @@
-﻿using System.IO.MemoryMappedFiles;
+﻿using KeyGenNameSpace;
+using System.IO.MemoryMappedFiles;
 namespace BlockParser;
 
 public class BlockChainParser {
@@ -19,6 +20,7 @@ public class BlockChainParser {
         //}
 
         ScriptParser scriptParser = new ScriptParser();
+        KeyGen keyGen = new KeyGen();
 
         var blocks = new List<TBlock>();
         //---
@@ -31,7 +33,7 @@ public class BlockChainParser {
         //  var testST=GetStringFromBytes(testBT);
 
         //----
-      //  bool myFlag = false;
+        //  bool myFlag = false;
         //string prevBlockHash;
         while(ReadMagic(reader)) {
 
@@ -195,9 +197,11 @@ public class BlockChainParser {
                     transaction.Outputs.Add(output);
                 }
                 transaction.Witnesses = new List<Witness>();
+                long tmpWitnessCount = 0;
                 if(transaction.HasWitness) {
                     for(int j = 0; j < transaction.InputCount; j++) {
                         var witnessCnt = r.ReadVarInt();
+                        tmpWitnessCount += witnessCnt;
                         for(int k = 0; k < witnessCnt; k++) {
                             var witness = new Witness();
                             witness.Size = r.ReadVarInt();
@@ -205,20 +209,32 @@ public class BlockChainParser {
                             witness.WitnessValue = GetStringFromBytes(witnessVl);
                             transaction.Witnesses.Add(witness);
                         }
+                        if(witnessCnt == 2) {
+                            var w0 = transaction.Witnesses[(int)tmpWitnessCount-2];
+                            var w1 = transaction.Witnesses[(int)tmpWitnessCount-1];
+                            var inp = transaction.Inputs[j];
+                            if(inp.ScriptLength != 0) {
+                                inp.OutputPublicKey = w1.WitnessValue;
+                                //inp.OutputAddress=keyGen.
+                            }
+                        }
                     }
                 }
                 var _lockTimeBT = r.ReadBytes(4);
                 transactionHEX.AddRange(_lockTimeBT);
                 transaction.LockTime = GetStringFromBytes(_lockTimeBT);
 
-             //   var stringHash = GetStringFromBytes(transactionHEX.ToArray());
+                //   var stringHash = GetStringFromBytes(transactionHEX.ToArray());
 
                 transaction.Hash = txHashConverter.Convert(transactionHEX);
 
                 block.Transactions.Add(transaction);
-                //using(FileStream fileStream = new FileStream("txHashBytes.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
-                //    fileStream.Write(transactionHEX.ToArray(), 0, transactionHEX.Count);
-                //}
+                var myl = false;
+                if(myl) {
+                    using(FileStream fileStream = new FileStream("p2shtx.dat", FileMode.Create, FileAccess.Write, FileShare.None)) {
+                        fileStream.Write(transactionHEX.ToArray(), 0, transactionHEX.Count);
+                    }
+                }
             }
             //prevBlockHash = block.Hash;
             //if(prevBlockHash == "00000000c80063f4d7d78c82a3ef86bf60bfa09a11caa43b1461270c4d9890d1") {
