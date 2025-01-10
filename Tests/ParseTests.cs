@@ -103,7 +103,7 @@ public class ParserTests {
         Assert.AreEqual(26, i.OutputNumber);
     }
     [Test]
-    public void Output_publicAddress1() {  //workwith
+    public void Output_publicAddress1() {  //!!!workwith!!!
         //arrange
         var parser = new BlockChainParser();
         var fl = File.OpenRead("testdata\\oneBlockData.dat");

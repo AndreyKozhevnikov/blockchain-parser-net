@@ -213,15 +213,15 @@ public class BlockChainParser {
                             var w0 = transaction.Witnesses[(int)tmpWitnessCount - 2];
                             var w1 = transaction.Witnesses[(int)tmpWitnessCount - 1];
                             var inp = transaction.Inputs[j];
+                            inp.OutputPublicKey = w1.WitnessValue;
+                            var publBytes = Convert.FromHexString(inp.OutputPublicKey);
+                            var adrs = keyGen.GenerateFromCompressedPublicKeyBytes(publBytes);
                             if(inp.ScriptLength != 0) {
-                                inp.OutputPublicKey = w1.WitnessValue;
-                                var publBytes = Convert.FromHexString(inp.OutputPublicKey);
-                                var adrs = keyGen.GenerateFromCompressedPublicKeyBytes(publBytes);
-                                if(inp.ScriptLength != 0) {
-                                    inp.OutputAddress = adrs.Addresses[1];
-                                }
-                                inp.OutputNonce = GetNonceFromScript(w0.WitnessValue);
+                                inp.OutputAddress = adrs.Addresses[1];
+                            } else {
+                                inp.OutputAddress = adrs.Addresses[2];
                             }
+                            inp.OutputNonce = GetNonceFromScript(w0.WitnessValue);
                         }
                     }
                 }
