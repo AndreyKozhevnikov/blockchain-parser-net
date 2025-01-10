@@ -22,7 +22,19 @@ namespace Tests {
 
             Assert.AreEqual("033bf7a71b30f06669d6114e0f13ea1fe0407db6db431033d3f2a3168322714fd8", tx.Inputs[0].OutputPublicKey);
             Assert.AreEqual("3BThywauYTyDbUnNBCgH6boLDwwjW7GtGU", tx.Inputs[0].OutputAddress);
-            //Assert.AreEqual(tx.Inputs[0].OutputNonce, "008453b569bd2210f221a22e4daeb4e89a2940398693769d6dd743ad97e7990f99");
+            Assert.AreEqual(tx.Inputs[0].OutputNonce, "008453b569bd2210f221a22e4daeb4e89a2940398693769d6dd743ad97e7990f99");
+        }
+
+
+        [Test]
+        public void GetNonceFromScript() {
+            //arrange
+            var parser = new BlockChainParser();
+            var script = "30450221008453b569bd2210f221a22e4daeb4e89a2940398693769d6dd743ad97e7990f9902204833964af36e956cc46e623199741515680bf18f92fe7e0e97589deda9893a4f01";
+            //act
+            var nonce = parser.GetNonceFromScript(script);
+            //assert
+            Assert.AreEqual("008453b569bd2210f221a22e4daeb4e89a2940398693769d6dd743ad97e7990f99", nonce);
         }
     }
 }

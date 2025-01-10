@@ -210,8 +210,8 @@ public class BlockChainParser {
                             transaction.Witnesses.Add(witness);
                         }
                         if(witnessCnt == 2) {
-                            var w0 = transaction.Witnesses[(int)tmpWitnessCount-2];
-                            var w1 = transaction.Witnesses[(int)tmpWitnessCount-1];
+                            var w0 = transaction.Witnesses[(int)tmpWitnessCount - 2];
+                            var w1 = transaction.Witnesses[(int)tmpWitnessCount - 1];
                             var inp = transaction.Inputs[j];
                             if(inp.ScriptLength != 0) {
                                 inp.OutputPublicKey = w1.WitnessValue;
@@ -220,6 +220,7 @@ public class BlockChainParser {
                                 if(inp.ScriptLength != 0) {
                                     inp.OutputAddress = adrs.Addresses[1];
                                 }
+                                inp.OutputNonce = GetNonceFromScript(w0.WitnessValue);
                             }
                         }
                     }
@@ -264,6 +265,14 @@ public class BlockChainParser {
         catch(EndOfStreamException) {
             return false;
         }
+    }
+
+    public string GetNonceFromScript(string script) {
+        var lengthNonceHEX = script.Substring(6, 2);
+        var lengthNonce = int.Parse(lengthNonceHEX, System.Globalization.NumberStyles.HexNumber);
+        var nonce = script.Substring(8, lengthNonce * 2);
+
+        return nonce;
     }
 
     public string GetStringFromBytes(byte[] data) {
