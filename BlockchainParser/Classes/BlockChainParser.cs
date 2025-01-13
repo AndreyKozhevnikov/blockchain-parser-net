@@ -1,4 +1,5 @@
 ﻿using KeyGenNameSpace;
+using NBitcoin;
 using System.IO.MemoryMappedFiles;
 namespace BlockParser;
 
@@ -187,12 +188,10 @@ public class BlockChainParser {
                     var _scriptBT = r.ReadBytes((int)output.ScriptSize);
                     transactionHEX.AddRange(_scriptBT);
                     output.Script = GetStringFromBytes(_scriptBT);
-
-
-
-
+                    //if(output.ScriptSize > 140) {
                     var address = scriptParser.GetAddressFromScript(_scriptBT);
                     output.Address = address;
+                    //}
 
                     transaction.Outputs.Add(output);
                 }
@@ -221,10 +220,26 @@ public class BlockChainParser {
                             } else {
                                 inp.OutputAddress = adrs.Addresses[2];
                             }
-                            inp.OutputNonce = GetNonceFromScript(w0.WitnessValue);
+                            inp.OutputNonce = GetNonceFromWitness(w0.WitnessValue);
                         }
                     }
+                } else {
+                    for(int j = 0; j < transaction.InputCount; j++) {
+                        var inp = transaction.Inputs[j];
+                        if(inp.Script.Length < 150) {
+                            continue;
+                        }
+
+                        string publicKey = "";
+                        string nonce = GetNonceFromScript(inp.Script, out publicKey);
+
+                        inp.OutputNonce = nonce;
+                        inp.OutputAddress = "testadr";
+                        inp.OutputPublicKey = publicKey;
+
+                    }
                 }
+
                 var _lockTimeBT = r.ReadBytes(4);
                 transactionHEX.AddRange(_lockTimeBT);
                 transaction.LockTime = GetStringFromBytes(_lockTimeBT);
@@ -266,8 +281,18 @@ public class BlockChainParser {
             return false;
         }
     }
+    public string GetNonceFromScript(string script, out string publicKey) {
+        var lengthScriptHex = script.Substring(4, 2);
+        var letghtScript = int.Parse(lengthScriptHex, System.Globalization.NumberStyles.HexNumber);
+        var allScriptLenght = 6 + letghtScript * 2 + 4;
+        publicKey = script.Substring(allScriptLenght);
 
-    public string GetNonceFromScript(string script) {
+        var lengthNonceHEX = script.Substring(8, 2);
+        var lengthNonce = int.Parse(lengthNonceHEX, System.Globalization.NumberStyles.HexNumber);
+        var nonce = script.Substring(10, lengthNonce * 2);
+        return nonce;
+    }
+    public string GetNonceFromWitness(string script) {
         var lengthNonceHEX = script.Substring(6, 2);
         var lengthNonce = int.Parse(lengthNonceHEX, System.Globalization.NumberStyles.HexNumber);
         var nonce = script.Substring(8, lengthNonce * 2);
