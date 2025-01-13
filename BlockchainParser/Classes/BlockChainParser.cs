@@ -226,7 +226,7 @@ public class BlockChainParser {
                 } else {
                     for(int j = 0; j < transaction.InputCount; j++) {
                         var inp = transaction.Inputs[j];
-                        if(inp.Script.Length < 150) {
+                        if(inp.Script.Length < 210) {
                             continue;
                         }
 
@@ -234,7 +234,8 @@ public class BlockChainParser {
                         string nonce = GetNonceFromScript(inp.Script, out publicKey);
 
                         inp.OutputNonce = nonce;
-                        inp.OutputAddress = "testadr";
+                        var publBytes = Convert.FromHexString(publicKey);
+                        inp.OutputAddress = keyGen.GenerateFromCompressedPublicKeyBytes(publBytes).Addresses[0];
                         inp.OutputPublicKey = publicKey;
 
                     }

@@ -51,8 +51,8 @@ namespace Tests {
             var tx = blockList[0].Transactions.Where(x => x.Hash == "0bbf1e8b9251b7e9dea89c93e720431e07a83cddd5a7b4e8e5e19e2df9a7c80e").First();
             //assert
 
-           // Assert.AreEqual("02e0892c8965d76b0d5c04a537e8d76e3209e6fe31c50bee30aa6bbf79e939d49a", tx.Inputs[0].OutputPublicKey);
-           // Assert.AreEqual("16EXV7FrPktNAMhLQ8vAeUKpCFzeWYdsZg", tx.Inputs[0].OutputAddress);
+            Assert.AreEqual("02e0892c8965d76b0d5c04a537e8d76e3209e6fe31c50bee30aa6bbf79e939d49a", tx.Inputs[0].OutputPublicKey);
+            Assert.AreEqual("16EXV7FrPktNAMhLQ8vAeUKpCFzeWYdsZg", tx.Inputs[0].OutputAddress);
             Assert.AreEqual("00819d183b680d55a378b29e6750dd41b3a5861ac08e7dd00b5caf70a6b3f7c4b9", tx.Inputs[0].OutputNonce);
         }
         [Test]
